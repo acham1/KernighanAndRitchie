@@ -10,14 +10,39 @@
 
 main() {
 	char c;
-	int tally[MAX_LEN + 1];
+	int tally[MAX_LEN + 1] = {0};
 	int currentLength = 0;
+	int state = OUT;
 
+	printf("Note: any input words of greater than length %d will be counted \nas a length "
+		 "%d word.\n", MAX_LEN, MAX_LEN);
+	printf("Enter input text here: ");
 	while ((c = getchar()) != EOF) {
 		if (c == ' ' || c == '\n' || c == '\t') {
-			
+			if (state == IN) {
+				tally[currentLength]++;
+				currentLength = 0;
+				state = OUT;
+			}
 		} else {
-
+			currentLength < MAX_LEN ? currentLength++ : 0;
+			if (state == OUT) {
+				state = IN;
+			}
 		}
+	}
+
+	if (state == IN) {
+		tally[currentLength]++;
+	}
+
+	printf("\nWord length histogram: \n");
+	int i, j;
+	for (i = 1; i <= MAX_LEN; i++) {
+		printf("%2d: ", i);
+		for (j = 0; j < tally[i]; j++) {
+			printf("*");
+		}
+		printf("\n");
 	}
 }
