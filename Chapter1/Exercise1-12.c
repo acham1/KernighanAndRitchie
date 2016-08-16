@@ -1,11 +1,15 @@
+/** Write a program that prints its input one word per line. */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define IN 1 // inside a word
 #define OUT 0 // outside a word
 
 
-main() {
+int main() {
+	printf("Write a program that prints its input one word per line.\n");
+
 	char c;
 	int state = OUT;
 
@@ -23,4 +27,5 @@ main() {
 			putchar(c);
 		}
 	}
+	return EXIT_SUCCESS;
 }

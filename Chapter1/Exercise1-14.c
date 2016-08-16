@@ -2,10 +2,11 @@
   * in its input. */
 
 #include <stdio.h>
+#include <stdlib.h>
 
-main() {
-	printf("This program prints a histogram of the frequencies of different characters"
-		" in its input. Only alphanumerical characters are counted.\n");
+int main() {
+	printf("Write a program to print a histogram of the frequencies of different\n"
+		"characters in its input. Only alphanumerical characters are counted.\n");
 
 	char c;
 	int i, j;
@@ -51,4 +52,5 @@ main() {
 	}
 
 	printf("\n");
+	return EXIT_SUCCESS;
 }

@@ -3,8 +3,12 @@
  *  in an unambiguous way. */
 
 #include <stdio.h>
+#include <stdlib.h>
 
- main() {
+ int main() {
+ 	printf("Write a program to copy its input to output, replacing each tab by \\t,\n"
+ 		"each backspace by \\b, and each backslash by \\\\. This makes tabs and \n"
+ 		"backspaces visible in an unambiguous way.\n");
  	printf("Please enter an input string:\n");
 
  	char c;
@@ -19,4 +23,5 @@
  			putchar(c);
  		}
  	}
+ 	return EXIT_SUCCESS;
  }

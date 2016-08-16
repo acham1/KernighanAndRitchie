@@ -7,12 +7,14 @@
 int mygetline(char line[], int minline);
 char printremainder();
 
-main() {
+int main() {
+	printf("Write a program to print all input lines that are longer than %d characters.\n", MINLINE);
+	
 	int c;			/* current line length */
 	char line[MINLINE + 1];	/* current input line */
 	printf("Enter text; all input lines with length >%d (including newline) will be printed:\n", MINLINE);
 
-	while (c = mygetline(line, MINLINE)) {
+	while ((c = mygetline(line, MINLINE))) {
 		if (c == EOF) {
 			break;
 		} else if (c != -2 && c != '\n') {

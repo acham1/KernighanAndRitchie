@@ -1,9 +1,12 @@
 /** Modify the temperature conversion program to print a heading above the table */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 // print Fahrenheit-Celsius table for fahr = 0, 20, ..., 300; floating-point version
-main() {
+int main() {
+	printf("Modify the temperature conversion program to print a heading above the table.\n");
+
 	float fahr, celsius;
 	float lower, upper, step;
 
@@ -19,4 +22,5 @@ main() {
 		printf("%4.0f %6.1f\n", fahr, celsius);
 		fahr = fahr + step;
 	}
+	return EXIT_SUCCESS;
 }

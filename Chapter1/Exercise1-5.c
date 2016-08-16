@@ -2,9 +2,13 @@
  *  that is, from 300 degrees to 0. */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 // print Celsius-Fahrenheit table for celsius = 0, 20, ... 300; floating-point version
-main() {
+int main() {
+	printf("Modify the temperature conversion program to print the table in reverse order,\n"
+		"that is, from 300 degrees to 0.\n");
+
 	float celsius, fahr;
 	float lower, upper, step;
 
@@ -18,4 +22,5 @@ main() {
 		fahr = celsius * (9.0/5.0) + 32.0;
 		printf("%7.0f %5.1f\n", celsius, fahr);
 	}
+	return EXIT_SUCCESS;
 }

@@ -3,8 +3,12 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
-main() {
+int main() {
+	printf("Write a program to copy its input to its output, replacing each string of\n"
+		"one or more blanks by a single blank.\n");
+
 	bool inChain = false;
 	char c;
 
@@ -21,4 +25,5 @@ main() {
 			putchar(c);
 		}
 	}
+	return EXIT_SUCCESS;
 }

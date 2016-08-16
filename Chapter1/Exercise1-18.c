@@ -12,7 +12,10 @@ char mygetline(char line[], int maxlength);
 /** copies chars from from[] to to[], starting at index startingpos in to[] */
 void copy(char from[], char to[], int startingpos);
 
-main() {
+int main() {
+	printf("Write a program to remove trailing blanks and tabs from each\n"
+		"line of input, and to delete entirely blank lines.\n");
+
 	printf("Enter text (max length %d chars); trailing whitespace "
 		"will be removed:\n", MAXLINE);
 

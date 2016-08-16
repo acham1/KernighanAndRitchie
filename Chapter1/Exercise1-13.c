@@ -3,17 +3,21 @@
   * challenging. */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define MAX_LEN 20	// maximum recorded word length
 #define IN 0	// inside a word
 #define OUT 1	// outside a word
 
-main() {
+int main() {
 	char c;
 	int tally[MAX_LEN + 1] = {0};
 	int currentLength = 0;
 	int state = OUT;
 
+	printf("Write a program to print a histogram of the lengths of words in its input. It is easy\n"
+		"to draw the histogram with the bars horizontal; a vertical orientation is more\n"
+		"challenging.\n");
 	printf("Note: any input words of greater than length %d will be counted \nas a length "
 		 "%d word.\n", MAX_LEN, MAX_LEN);
 	printf("Enter input text here: ");
@@ -45,4 +49,5 @@ main() {
 		}
 		printf("\n");
 	}
+	return EXIT_SUCCESS;
 }

@@ -3,12 +3,17 @@
   * lines, and as much as possible of the text. */
 
 #include <stdio.h>
+#include <stdlib.h>
 #define MAXLINE 30		/* maximum input line length */
 
 int mygetline(char line[], int maxline);
 void copy(char from[], char to[]);
 
-main() {
+int main() {
+	printf("Revise the main routine of the longest-line program so it will\n"
+		"correctly print the length of arbitrary long input lines, and as much\n"
+		"as possible of the text.\n");
+
 	int len;			/* current line length */
 	int max;			/* maximum length seen so far */
 	char line[MAXLINE + 1];	/* current input line */
@@ -29,6 +34,7 @@ main() {
 	} else {
 		printf("No line received.\n");
 	}
+	return EXIT_SUCCESS;
 }  
 
 int mygetline(char line[], int maxline) {
