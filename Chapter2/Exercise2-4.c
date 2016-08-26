@@ -22,6 +22,10 @@ int main() {
 	}
 	s1[i] = '\0';		
 
+	while (c != '\n' && c != EOF) {
+		c = getchar();
+	}
+
 	printf("\nEnter string s2 (max length %d): ", MAXLENGTH);
 	while (i < MAXLENGTH && (c = getchar()) != EOF && c != '\n') {
 		s2[j++] = c;

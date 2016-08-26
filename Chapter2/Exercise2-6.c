@@ -29,6 +29,11 @@ int main() {
 	i = 0;
 	x = atoi(x_string);
 
+	while (c != '\n' && c != EOF) {
+		c = getchar();
+	}
+
+
 	printf("\nPlease enter position p (max %d digits): ", MAX_LENGTH);
 	while (i < MAX_LENGTH && (c = getchar()) != '\n' && c != EOF) {
 		if (!isspace(c) && (c >= '0' && c <= '9')) {
@@ -42,6 +47,10 @@ int main() {
 	i = 0;
 	p = atoi(p_string);
 
+	while (c != '\n' && c != EOF) {
+		c = getchar();
+	}
+
 	printf("\nPlease enter number of bits n (max %d digits): ", MAX_LENGTH);
 	while (i < MAX_LENGTH && (c = getchar()) != '\n' && c != EOF) {
 		if (!isspace(c) && (c >= '0' && c <= '9')) {
@@ -54,6 +63,10 @@ int main() {
 	}
 	i = 0;
 	n = atoi(n_string);
+
+	while (c != '\n' && c != EOF) {
+		c = getchar();
+	}
 
 	printf("\nPlease enter position y (max %d digits): ", MAX_LENGTH);
 	while (i < MAX_LENGTH && (c = getchar()) != '\n' && c != EOF) {
