@@ -40,7 +40,7 @@ int main() {
 	time(&t1);
 	i = binsearch2(toFind, v, numElements);
 	time(&t2);
-	printf("Original result: %d (time %f us)\n", i, 1000000. * difftime(t2, t1));
+	printf("Current result: %d (time %f us)\n", i, 1000000. * difftime(t2, t1));
 
 	return EXIT_SUCCESS;
 }
@@ -66,15 +66,14 @@ int binsearch2(int x, int v[], int n) {
 	int low, high, mid;
 	low = 0;
 	high = n - 1;
-	while (low <= high) {
-		mid = (low+high)/2;
+	mid = (low+high)/2;
+	while (low <= high && x != v[mid]) {
 		if (x < v[mid]) {
 			high = mid;
-		} else if (x > v[mid]) {
-			low = mid + 1;
 		} else {
-			return mid;
+			low = mid + 1;
 		}
+		mid = (low+high)/2;
 	}
-	return -1;
+	return (x == v[mid]) ? mid : -1;
 }
