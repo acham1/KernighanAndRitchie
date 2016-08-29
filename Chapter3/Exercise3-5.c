@@ -50,7 +50,6 @@ int main() {
 	return EXIT_SUCCESS;
 }
 
-/* itoa: convert n to characters in s */
 char * itob(int n, char s[], int b) {
 	int i = 0, sign;
 	unsigned int us;
