@@ -27,10 +27,11 @@ int main(int argc, char * argv[]) {
   int n;
   if (argv[1] == NULL) {
     printf("Error: No n value provided.\n");
+    return EXIT_SUCCESS;
   } else {
-      n = atoi(argv[1]);
-      if (n == 0) {
-        printf("Found n = 0; no printing needed.\n");
+      n = -atoi(argv[1]);
+      if (n <= 0) {
+        printf("Invalid argument; please enter as -n.\n");
         return EXIT_SUCCESS;
       }
   }
