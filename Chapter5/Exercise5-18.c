@@ -8,65 +8,137 @@
 
 enum { NAME, PARENS, BRACKETS };
 
-void dcl(void);
-void dirdcl(void);
+int dcl(void);
+int dirdcl(void);
 int gettoken(void); /* return next token */
 
-int gettoken(void);
 int tokentype; /* type of last token */
 char token[MAXTOKEN]; /* last token string */
 char name[MAXTOKEN];
 char datatype[MAXTOKEN];
 char out[1000];
+char lastchar;
+int haslast = 0;
 
-main() { /* convert declaration to words */
-    while (gettoken() != EOF) {
+int main() { /* convert declaration to words */
+    int c;
+    int getch(void);
+    void ungetch(int);
+
+    printf("Make decl recover from input erros\n");
+    printf("This program cannot handle declarations with arguments.\n");
+    printf("This program requires the () operator not to be separated by space.\n");
+    printf("Example:\n"
+    "    >> int (*((*fn[3])())[4])()\n"
+    "    >> fn:  array[3] of pointer to function returning array[4] of pointer to\n"
+    "            function returning int\n");
+    printf("Enter declaration below: \n");
+    while (printf(">> "), gettoken() != EOF) {
         strcpy(datatype, token);
-        out[0] = '\0'
-        dcl();
+        out[0] = '\0';
+        if (dcl()) {
+            printf("Error: invalid input\n");
+            while (tokentype != '\n' && tokentype != EOF && (c = getch()) != '\n' && c != EOF);
+            continue;
+        }
         if (tokentype != '\n') {
             printf("syntax error\n");
         }
         printf("%s: %s %s \n", name, out, datatype);
+    }
+    printf("\n");
+    return 0;
+}
+
+int gettoken(void) {
+    int c, getch(void);
+    void ungetch(int);
+    char *p = token;
+
+    while ((c = getch()) == ' ' || c == '\t');
+    if (c == '(') {
+        if ((c = getch()) == ')') {
+            strcpy(token, "()");
+            return tokentype = PARENS;
+        } else {
+            ungetch(c);
+            return tokentype = '(';
+        }
+    } else if (c == '[') {
+        for (*p++ = c; (*p++ = getch()) != ']'; );
+        *p = '\0';
+        return tokentype = BRACKETS;
+    } else if (isalpha(c)) {
+        for (*p++ = c; isalnum(c = getch()); ) {
+            *p++ = c;
+        }
+        *p = '\0';
+        ungetch(c);
+        return tokentype = NAME;
+    } else {
+        return tokentype = c;
+    }
+}
+
+/* decl: parse a declarator */
+int dcl(void) {
+    int ns;
+
+    for (ns = 0; gettoken() == '*'; ) {/* count *'s */
+        ns++;
+    }
+    if (dirdcl()) {
+        return 1;
+    }
+    while (ns-- > 0) {
+        strcat(out, " pointer to");
+    }
+    return 0;
+}
+
+/* dirdcl: parse a direct declarator */
+int dirdcl(void) {
+    int type;
+    void ungetch(int);
+
+    if (tokentype == '(') { /* ( dcl ) */
+        dcl();
+        if (tokentype != ')') {
+            printf("\nerror: missing )\n");
+            return 1;
+        } 
+    } else if (tokentype == NAME) {/* variable name */
+        strcpy(name, token);
+    } else {
+        printf("\nerror: expected name or (dcl)\n");
+        return 1;
+    }
+    while ((type = gettoken()) == PARENS || type == BRACKETS) {
+        if (type == PARENS) {
+            strcat(out, " function returning");
+        } else {
+            strcat(out, " array");
+            strcat(out, token);
+            strcat(out, " of");
         }
     }
     return 0;
 }
 
-
-
-/* decl: parse a declarator */
-void dcl(void) {
-    int ns;
-
-    for (ns = 0; gettoken() == '*'; ) /* count *'s */
-        ns++
-    dirdcl();
-    while (ns-- > 0) 
-        strcat(out, " pointer to");
+int getch(void) {
+    if (haslast) {
+        haslast = 0;
+        return lastchar;
+    } else {
+        return getc(stdin);
+    }
 }
 
-/* dirdcl: parse a direct declarator */
-void dirdcl(void) {
-    int type;
-
-    if (tokentype == '(') { /* ( dcl ) */
-        dcl();
-        if tokentype != ')')
-            printf("error: missing )\n");
-        } 
-    } else if (tokentype == NAME) /* variable name */
-        strcpy(name, token);
-    else
-        printf("error: expected name or (dcl)\n");
-    while ((type = gettoken()) == PARENS || type == BRACKETS)
-        if (type == PARENS)
-            strcat(out, " function returning");
-        else {
-            strcat(out, " array");
-            strcat(out, token);
-            strcat(out, " of");
-        }
+void ungetch(int c) {
+    if (haslast) {
+        printf("Error: cannot have more than one char of pushback\n");
+    } else {
+        haslast = 1;
+        lastchar = c;
+    }
 }
-
-
