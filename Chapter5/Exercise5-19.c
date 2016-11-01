@@ -50,7 +50,7 @@ int main(void) {
             if (tokentype == PARENS || tokentype == BRACKETS) {
                 strcat(out, token);
             } else if (tokentype == '*') {
-                if (prevtokentype == '*' || nexttokentype == '*') {
+                if (prevtokentype == '*' || nexttokentype == '*' || nexttokentype == NAME) {
                     sprintf(temp, "*%s", out);
                 } else {
                     sprintf(temp, "(*%s)", out);
