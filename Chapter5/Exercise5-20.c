@@ -1,4 +1,5 @@
-/** Make dcl recover from input errors */
+/** Expand dcl to handle declarations with function argument types,
+  * qualifiers like const, and so on. */
 
 #include <stdio.h>
 #include <string.h>
@@ -17,7 +18,7 @@ char token[MAXTOKEN]; /* last token string */
 char name[MAXTOKEN];
 char datatype[MAXTOKEN];
 char out[1000];
-char lastchar;
+char lastchar[MAXTOKEN];
 int haslast = 0;
 
 int main() { /* convert declaration to words */
@@ -25,13 +26,14 @@ int main() { /* convert declaration to words */
     int getch(void);
     void ungetch(int);
 
-    printf("Make decl recover from input erros\n");
+    printf("Expand dcl to handle declarations with function argument types,\n"
+        "qualifiers like const, and so on.\n");
     printf("This program cannot handle declarations with arguments.\n");
-    printf("This program requires the () operator not to be separated by space.\n");
+    printf("This program can handle the const qualifier\n");
     printf("Example:\n"
-    "    >> int (*((*fn[3])())[4])()\n"
+    "    >> int (*((*fn[3])())[4])(char, int)\n"
     "    >> fn:  array[3] of pointer to function returning array[4] of pointer to\n"
-    "            function returning int\n");
+    "            function taking arguments char, int, and returning int\n");
     printf("Enter declaration below: \n");
     while (printf(">> "), gettoken() != EOF) {
         strcpy(datatype, token);
@@ -54,6 +56,8 @@ int gettoken(void) {
     int c, getch(void);
     void ungetch(int);
     char *p = token;
+    int num_past = 0;
+    int was_space = 1;
 
     while ((c = getch()) == ' ' || c == '\t');
     if (c == '(') {
@@ -69,11 +73,25 @@ int gettoken(void) {
         *p = '\0';
         return tokentype = BRACKETS;
     } else if (isalpha(c)) {
-        for (*p++ = c; isalnum(c = getch()); ) {
+        for (*p++ = c; isalnum(c = getch()) || c == ' '; ) {
             *p++ = c;
+            if (was_space && isalnum(c)) {
+                was_space = 0;
+                num_past = 1;
+            } else if (!was_space && !isalnum(c)) {
+                was_space = 1;
+                num_past++;
+            } else {
+                num_past++;
+            }
+        }
+        ungetch(c);
+        if (c == '(') {
+            while (num_past-- > 0) {
+                ungetch(*--p);
+            }
         }
         *p = '\0';
-        ungetch(c);
         return tokentype = NAME;
     } else {
         return tokentype = c;
@@ -127,18 +145,16 @@ int dirdcl(void) {
 
 int getch(void) {
     if (haslast) {
-        haslast = 0;
-        return lastchar;
+        return lastchar[--haslast];
     } else {
         return getc(stdin);
     }
 }
 
 void ungetch(int c) {
-    if (haslast) {
+    if (haslast >= MAXTOKEN) {
         printf("Error: cannot have more than one char of pushback\n");
     } else {
-        haslast = 1;
-        lastchar = c;
+        lastchar[haslast++] = c;
     }
 }
