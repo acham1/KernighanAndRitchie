@@ -29,11 +29,11 @@ int main() { /* convert declaration to words */
     printf("Expand dcl to handle declarations with function argument types,\n"
         "qualifiers like const, and so on.\n");
     printf("This program cannot handle declarations with arguments.\n");
-    printf("This program can handle the const qualifier\n");
+    printf("This program can handle qualifiers\n");
     printf("Example:\n"
-    "    >> int (*((*fn[3])())[4])(char, int)\n"
+    "    >> int (*((*fn[3])())[4])()\n"
     "    >> fn:  array[3] of pointer to function returning array[4] of pointer to\n"
-    "            function taking arguments char, int, and returning int\n");
+    "            function returning int\n");
     printf("Enter declaration below: \n");
     while (printf(">> "), gettoken() != EOF) {
         strcpy(datatype, token);
