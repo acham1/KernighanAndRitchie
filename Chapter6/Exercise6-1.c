@@ -11,17 +11,17 @@ struct key {
     char *word;
     int count;
 } keytab[] = {
-    "auto", 0,
-    "break", 0,
-    "case", 0,
-    "char", 0,
-    "const", 0,
-    "continue", 0,
-    "default", 0,
-    "unsigned", 0, 
-    "void", 0,
-    "volatile", 0,
-    "while", 0
+    {"auto", 0},
+    {"break", 0},
+    {"case", 0},
+    {"char", 0},
+    {"const", 0},
+    {"continue", 0},
+    {"default", 0},
+    {"unsigned", 0}, 
+    {"void", 0},
+    {"volatile", 0},
+    {"while", 0}
 };
 
 #define MAXWORD 100
@@ -112,8 +112,10 @@ int strict_getword(char* word, int lim) {
                 c = cnext;
                 cnext = getch();
             }
+        } else {
+            *w++ = c;
+            ungetch(cnext);
         }
-        *w++ = c;
     }
     if (!isalpha(c)) {
         *w = '\0';
@@ -126,6 +128,7 @@ int strict_getword(char* word, int lim) {
         }
     }
     *w = '\0';
+    printf("(%s)", word);
     return word[0];
 }
 
