@@ -35,6 +35,7 @@ int main(void) {
     int n;
     char word[MAXWORD];
 
+    print_heading();
     while (strict_getword(word, MAXWORD) != EOF) {
         if (isalpha(word[0])) {
             if ((n = binsearch(word, keytab, NKEYS)) >= 0) {
@@ -85,7 +86,6 @@ int strict_getword(char* word, int lim) {
                 cnext = getch();
             }
         } else if (c == '"') {
-            printf("in quote");
             hadSlash = 0;
             while (hadSlash || cnext != '"') {
                 if (!hadSlash && cnext == '\\') {
@@ -98,7 +98,6 @@ int strict_getword(char* word, int lim) {
                 c = cnext;
                 cnext = getch();
             }
-            printf("out quote");
         } else if (c == '\'') {
             hadSlash = 0;
             while (hadSlash || cnext != '\'') {
@@ -128,7 +127,6 @@ int strict_getword(char* word, int lim) {
         }
     }
     *w = '\0';
-    printf("(%s)", word);
     return word[0];
 }
 
