@@ -3,114 +3,125 @@
   * "the", "and", and "so" on. */
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "Chapter6.h"
+#include <ctype.h>
 #define MAXWORD 100
+#define NUM_NOISE 3
+#define DEFAULT_OCCURENCE 1
 
 typedef struct Node {
-    int num;
+    int pos;
     char* key;
-    struct Node* data;
+    int capacity;
+    int* line_nums;
     struct Node* next;
 } Node;
 
+typedef struct List {
+    Node* head;
+} List;
+
+char* noise[NUM_NOISE] = {"the", "and", "so"};
+
 void print_heading(void);
-void free_list(Node* l);
+void free_list(List* l);
 Node* create_node(void);
+List* create_list(void);
+int isnoise(char* word);
+int strict_getword(char* word, int lim);
+int line_num = 1;
 
 int main(void) {
-    int word[MAXWORD+1];
+    List* L = create_list();
+    int result, prevresult;
+    char word[MAXWORD+1];
+    Node* n, *prevn;
+    int skip, i;
 
     print_heading();
     while (strict_getword(word, MAXWORD) != EOF) {
-        if (strlen(word) <= 0) {
+        if (isnoise(word))
             continue;
-        }
-        if (list == NULL) {
-            list = create_node();
-            list->num = 1;
-            list->key = truncate(word, n);
-            list->data = create_node();
-            tmpword = malloc(strlen(word)+1);
-            memcpy(tmpword, word, strlen(word)+1);
-            list->data->key = tmpword;
-        } else if (strcmp(word, list->key) < 0) {
-            tmp = list;
-            list = create_node();
-            list->next = tmp;
-            list->num = 1;
-            list->key = truncate(word, n);
-            list->data = create_node();
-            tmpword = malloc(strlen(word)+1);
-            memcpy(tmpword, word, strlen(word)+1);
-            list->data->key = tmpword;            
+        if (strlen(word) <= 0) 
+            continue;
+        if (L->head == NULL) {
+            n = L->head = create_node();
+            n->line_nums[n->pos++] = line_num;
+            n->key = malloc(strlen(word)+1);
+            memcpy(n->key, word, strlen(word)+1);
+        } else if (strcmp(word, L->head->key) < 0) {
+            n = L->head;
+            L->head = create_node();
+            L->head->next = n;
+            n->line_nums[n->pos++] = line_num;
+            n->key = malloc(strlen(word)+1);
+            memcpy(n->key, word, strlen(word)+1);
         } else {
-            result = 0;
-            prevresult = 0;
-            tmp = list;
-            key = truncate(word, n);
+            result = prevresult = 0;
+            n = L->head;
             skip = 0;
-            while (tmp != NULL) {
-                result = strcmp(key, tmp->key);
+            while (n != NULL) {
+                result = strcmp(word, n->key);
                 if (result == 0) {
-                    if (addword(&tmp->data, word)) {
-                        tmp->num++;
-                    } else {
-                        free(key);
-                    }
+                    if (n->pos >= n->capacity) 
+                        n->line_nums = realloc(n->line_nums, n->capacity *= 2);
+                    n->line_nums[n->pos++] = line_num;
                     skip = 1;
                     break;
                 } else if (result < 0 && prevresult > 0) {
-                    prevtmp->next = create_node();
-                    prevtmp->next->next = tmp;
-                    tmp = prevtmp->next;
-                    tmp->key = key;
-                    tmp->num = 1;
-                    tmp->data = create_node();
-                    tmpword = malloc(strlen(word)+1);
-                    memcpy(tmpword, word, strlen(word)+1);
-                    tmp->data->key = tmpword;
+                    prevn->next = create_node();
+                    prevn->next->next = n;
+                    n = prevn->next;
+                    n->line_nums[n->pos++] = line_num;
+                    n->key = malloc(strlen(word)+1);
+                    memcpy(n->key, word, strlen(word)+1);
                     skip = 1;
                     break;
                 }
                 prevresult = result;
-                prevtmp = tmp;
-                tmp = tmp->next;
+                prevn = n;
+                n = n->next;
             }
-            if (skip) {
+            if (skip)
                 continue;
-            }
-            prevtmp->next = create_node();
-            tmp = prevtmp->next;
-            tmp->key = key;
-            tmp->num = 1;
-            tmp->data = create_node();
-            tmpword = malloc(strlen(word)+1);
-            memcpy(tmpword, word, strlen(word)+1);
-            tmp->data->key = tmpword;
+            prevn->next = create_node();
+            n = prevn->next;
+            n->line_nums[n->pos++] = line_num;
+            n->key = malloc(strlen(word)+1);
+            memcpy(n->key, word, strlen(word)+1);
         }
     }
 
-    printf("Printing word clusters sharing first %d letters:\n\n", n);
-    tmp = list;
-    while (tmp != NULL) {
-        prevtmp = tmp->data;
-        while (prevtmp != NULL) {
-            printf("%s\n", prevtmp->key);
-            prevtmp = prevtmp->next;
+    printf("\nPrinting line locations of each word:\n\n");
+    n = L->head;
+    while (n != NULL) {
+        printf("%s: ", n->key);
+        i = 0;
+        while (i < n->pos) {
+            printf("%d, ", n->line_nums[i++]);
         }
         printf("\n");
-        tmp = tmp->next;
+        n = n->next;
     }
-
-    free_list(list);
+    free_list(L);
     return EXIT_SUCCESS;
+}
+
+int isnoise(char* word) {
+    int i = 0;
+    while (i < NUM_NOISE) 
+        if (strcmp(word, noise[i++]) == 0) 
+            return 1;
+    return 0;
 }
 
 void print_heading(void) {
     printf("Write a cross-referencer that prints a list of all words in a document,\n"
         "and for each word, a list of the line numbers on which it occurs. Remove noise\n"
         "words like \"the\", \"and\", and \"so\" on.\n");
+    printf("Please enter a text document via stdin below:\n");
 }
 
 int strict_getword(char* word, int lim) {
@@ -118,7 +129,9 @@ int strict_getword(char* word, int lim) {
     int c, cnext;
     int hadSlash;
 
-    while (isspace(c = getch()) && c != '"' && c != '/' && c != '\'') ;
+    while (isspace(c = getch()) && c != '"' && c != '/' && c != '\'') 
+        if (c == '\n')
+            line_num++;
     if (c != EOF) {
         cnext = getch();
         if (c == '/' && cnext == '/') {
@@ -174,24 +187,34 @@ int strict_getword(char* word, int lim) {
     return word[0];
 }
 
-void free_list(Node* l) {
-    Node* n;
-    if (l != NULL) {
-        n = l->next;
-        if (l->key != NULL) {
-            free(l->key);
-        }
-        free_list(l->data);        
-        free(l);
-        free_list(n);
+void free_list(List* l) {
+    Node* n, *m;
+
+    if (l == NULL)
+        return;
+    n = l->head;
+    while (n != NULL) {
+        m = n->next;
+        free(n->line_nums);
+        free(n->key);
+        free(n);
+        n = m;
     }
+    free(l);
+}
+
+List* create_list() {
+    List* l = malloc(sizeof(List));
+    l->head = NULL;
+    return l;
 }
 
 Node* create_node() {
     Node* n = malloc(sizeof(Node));
-    n->num = 0;
+    n->pos = 0;
     n->key = NULL;
-    n->data = NULL;
     n->next = NULL;
+    n->capacity = DEFAULT_OCCURENCE;
+    n->line_nums = malloc(sizeof(int) * DEFAULT_OCCURENCE);
     return n;
 }
