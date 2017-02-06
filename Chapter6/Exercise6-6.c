@@ -1,6 +1,12 @@
 /** Implement a simple version of the #define processor (i.e., no arguments)
   * suitable for use with C programs, based on the routines of this section. 
-  * You may also find getch and ungetch helpful.. */
+  * You may also find getch and ungetch helpful.. 
+
+  * This implementation of the #define processor does not work unless the
+  * defined word is separated by whitespace from any other token.
+  * e.g. #define NAME 1000
+  *      this will fail to replace [NAME] with [1000], but [ NAME ] will 
+  *      become [ 1000 ] */
 
 #define HASHSIZE 101
 #define MAXLINE 1000
@@ -16,12 +22,26 @@ char * getWord(char* s) {
     char* out;
     int pos = 0; /* position to write to in temp */
 
-    while (!isspace(*s) && *s != '\0' && *s != EOF) {
+    if (s == NULL) {
+        out = malloc(sizeof(char));
+        *out = '\0';
+        return out;
+    }
+    while (*s != EOF && !isspace(*s) && *s != '\0') {
         temp[pos++] = *s++;
     }
     temp[pos] = '\0';
     out = malloc(sizeof(char) * (1 + strlen(temp)));
     return strcpy(out, temp);
+}
+
+/* hash: form hash value for string s */
+unsigned int hash(char *s) {
+    unsigned int hashval;
+    for (hashval = 0; *s != '\0'; s++) {
+        hashval = *s + 31 * hashval;
+    }
+    return hashval % HASHSIZE;
 }
 
 struct nlist { /* table entry: */
@@ -67,14 +87,6 @@ struct nlist *undef(char* s) {
     return NULL; /* not found */
 }
 
-unsigned hash(char *s) {
-    unsigned hashval;
-    for (hashval = 0; *s != '\0'; s++) {
-        hashval = *s + 31 * hashval;
-    }
-    return (unsigned) hashval % HASHSIZE;
-}
-
 /* install: put (name, defn) in hashtab */
  struct nlist *install(char *name, char *defn) {
     struct nlist *np;
@@ -100,19 +112,19 @@ int main(int argc, char* argv[]) {
     char tmpline[MAXLINE];
     char* tableKey, *tableValue, *currentWord;
     char* strPointer;
-    int containsDefine;
+    char* containsDefine;
     FILE* f;
 
-    f = fopen(argv[FILEINDEX]);
+    f = fopen(argv[FILEINDEX], "r");
     /* keep reading new lines until end of file */
     while (fgets(tmpline, MAXLINE, f) != NULL) {
-        strPointer = strtok(tmpline, ' ');
+        strPointer = strtok((char *) tmpline, " ");
         containsDefine = strstr(strPointer, "#define");
         /* if line starts with #define, then install entry in hashtable */
         if (containsDefine == strPointer) {
-            strPointer = strtok(NULL, ' ');
+            strPointer = strtok(NULL, " ");
             tableKey = getWord(strPointer);
-            strPointer = strtok(NULL, ' ');
+            strPointer = strtok(NULL, " ");
             tableValue = getWord(strPointer);
             install(tableKey, tableValue);
         } else {
@@ -126,7 +138,11 @@ int main(int argc, char* argv[]) {
                     printf("%s ", currentWord);
                 }
                 free(currentWord);
+                strPointer = strtok(NULL, " ");
+                currentWord = getWord(strPointer);
             }
         }
+        printf("\n");
     }
+    fclose(f);
 }
