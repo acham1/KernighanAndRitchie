@@ -65,6 +65,7 @@ int main(int argc, char* argv[]) {
                 continue;
             } else {
                 searchFile(line, file, number, except, pattern);
+                fclose(file);
             }
         }
     }
