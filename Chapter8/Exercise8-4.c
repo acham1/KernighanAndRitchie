@@ -6,11 +6,10 @@
  * the other functions of the library.
  */
 
-#include <fcnt.h>
+#include <stdlib.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include "my_stdio.h"
-
-enum _origin {SEEK_SET, SEEK_CUR, SEEK_END};
 
 extern int fflush(FILE * stream);
 
@@ -31,12 +30,12 @@ int fseek(FILE *fp, long offset, int origin) {
         default:
             return EOF;
     }
-    if (fp->flags._WRITE) {
+    if (fp->flag._WRITE) {
         fflush(fp);
-    } else if (fp->flags._READ) {
-        f->cnt = 0;
-        free(f->base);
-        f->ptr = f->base = NULL;
+    } else if (fp->flag._READ) {
+        fp->cnt = 0;
+        free(fp->base);
+        fp->ptr = fp->base = NULL;
     }
     return (lseek(fp->fd, offset, lseekOrigin) >= 0) ? 0 : EOF;
 }
